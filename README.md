@@ -50,7 +50,7 @@ used to do this.
 On MacOSX, `git` can be installed using `Xcode Command Line Tools`. For 
 Mavericks (10.9) or above, you can do this by trying to run `git` from the 
 `Terminal` the very first time. If you don’t have it installed already, it will 
-prompt you to install it.
+prompt you to install the xcode tools.
 
 On Windows platforms. `Babun` will provide `git` as well as other development 
 tools.
@@ -76,12 +76,6 @@ Checking connectivity... done.
 
 Ansible can be installed using a package manager for MacOSX called 
 [Macports](https://www.macports.org).
-
-Ensure that XCode 3 or 4 is installed (should be on the install DVDs for your 
-Mac). If you like to live on the bleeding edge, you can purchase XCode 4 from the 
-Mac App Store. To check if XCode is installed properly, you can type gcc in the 
-command-line. If you get gcc: command not found, then XCode is not properly 
-installed.
 
 Download the DMG image for MacPorts from [here](https://www.macports.org/install.php).
 Be sure to pick the correct one for your MacOS X version. Mount the disk image 
