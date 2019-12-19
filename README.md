@@ -70,6 +70,11 @@ Resolving deltas: 100% (516/516), done.
 Checking connectivity... done.
 ```
 
+Now we need to switch to the repository branch containing the latest code:
+```
+$ git checkout create-vm
+```
+
 ## Ansible installation
 
 ### MacOSX
