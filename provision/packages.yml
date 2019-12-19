@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: yes
+  tasks:
+    - name: installing repo for Java 8 in Ubuntu
+      apt_repository: repo='ppa:openjdk-r/ppa'
+
+- hosts: all
+  vars:
+    pip_install_packages:
+      - name: docker
+      - name: docker-compose
+  gather_facts: yes
+  become: yes
+  roles:
+        - role: pip
+        - role: docker
+        - role: java
+          when: "ansible_os_family == 'Debian'"
+          java_packages:
+            - openjdk-8-jdk
+        - role: unzip
+        - role: git
+        - role: postgresql-client
+
+

@@ -1,0 +1,9 @@
+---
+# tasks file for gigadb
+- name: Install GigaDB website
+  include_tasks: install.yml
+  tags: gigadb
+
+- name: Load production data into PostreSQL database
+  include_tasks: load_prod.yml
+  tags: load_prod

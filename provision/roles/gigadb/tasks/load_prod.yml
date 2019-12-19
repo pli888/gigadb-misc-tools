@@ -1,0 +1,57 @@
+---
+- name: Check if database backup file zip exists
+  command: "/usr/bin/test -e /home/vagrant/ExceltoGigaDB/{{ gigadb.prod_sql_zip_file }}"
+  ignore_errors: True
+  register: sql_zip_exists
+  tags:
+    - load_prod
+
+- name: Download database backup file
+  get_url:
+    url: https://www.dropbox.com/s/l45m32bagltdyd5/{{ gigadb.prod_sql_zip_file }}?dl=1
+    dest: "{{ gigadb.home_dir }}/ExceltoGigaDB/{{ gigadb.prod_sql_zip_file }}"
+    mode: '0651'
+  when: sql_zip_exists.rc != 0
+  become: yes
+  become_user: vagrant
+  tags:
+    - load_prod
+
+- name: Unarchive database backup zip file after downloading it
+  unarchive:
+    src: "{{ gigadb.home_dir }}/ExceltoGigaDB/{{ gigadb.prod_sql_zip_file }}"
+    dest: "{{ gigadb.home_dir }}/ExceltoGigaDB"
+  tags:
+    - load_prod
+
+- name: Terminate connections to GigaDB postgresql database
+  shell: "PGPASSWORD=vagrant /usr/bin/psql -h 127.0.0.1 -p 54321 -U gigadb -d postgres -c \"select pg_terminate_backend(pg_stat_activity.pid) from pg_stat_activity where datname='gigadb';\""
+  args:
+    chdir: "{{ gigadb.home_dir }}/ExceltoGigaDB"
+  become: true
+  tags:
+    - load_prod
+
+- name: Remove gigadb database from postgresql
+  shell: "PGPASSWORD=vagrant /usr/bin/psql -h 127.0.0.1 -p 54321 -U gigadb -d postgres -c \"drop database gigadb;\""
+  args:
+    chdir: "{{ gigadb.home_dir }}/ExceltoGigaDB"
+  become: true
+  tags:
+    - load_prod
+
+- name: Create new empty gigadb database
+  shell: "PGPASSWORD=vagrant psql -h 127.0.0.1 -p 54321 -U gigadb -d postgres -c \"create database gigadb owner gigadb;\""
+  args:
+    chdir: "{{ gigadb.home_dir }}/ExceltoGigaDB"
+  become: true
+  tags:
+    - load_prod
+
+- name: Import SQL dump
+  shell: "PGPASSWORD=vagrant psql -h 127.0.0.1 -p 54321 -U gigadb gigadb < gigadbv3_20191030.sql"
+  args:
+    chdir: "{{ gigadb.home_dir }}/ExceltoGigaDB"
+  become: true
+  tags:
+    - load_prod

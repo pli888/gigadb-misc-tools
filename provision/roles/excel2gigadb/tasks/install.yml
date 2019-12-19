@@ -1,0 +1,52 @@
+---
+- name: Clone ExceltoGigaDB repo
+  git:
+    repo: "{{ excel2gigadb.repo }}"
+    dest: /home/vagrant/ExceltoGigaDB
+    version: master
+    force: yes
+  become: yes
+  become_user: vagrant
+
+- name: Copy run.sh file
+  copy:
+    src: "{{ role_path }}/files/run.sh"
+    dest: /home/vagrant/ExceltoGigaDB/run.sh
+    owner: vagrant
+    group: vagrant
+    mode: u=rwx,g=rx,o=rx
+  become: yes
+  become_user: vagrant
+
+- name: install dos2unix
+  package:
+    name: dos2unix
+    state: present
+
+- name: Use dos2unix to remove ^M characters from files
+  shell: dos2unix configuration/*.* src/*.java
+  args:
+    chdir: /home/vagrant/ExceltoGigaDB
+
+- name: Replace databaseUrl value in setting.xml
+  lineinfile:
+    path: /home/vagrant/ExceltoGigaDB/configuration/setting.xml
+    regexp: '<databaseUrl>jdbc:postgresql'
+    line: '        <databaseUrl>jdbc:postgresql://localhost:54321/gigadb</databaseUrl>'
+
+- name: Replace databaseUserName value in setting.xml
+  lineinfile:
+    path: /home/vagrant/ExceltoGigaDB/configuration/setting.xml
+    regexp: '<databaseUserName>gigadb_jesse'
+    line: '        <databaseUserName>gigadb</databaseUserName>'
+
+- name: Replace databasePassword value in setting.xml
+  lineinfile:
+    path: /home/vagrant/ExceltoGigaDB/configuration/setting.xml
+    regexp: '<databasePassword>gigadb2013'
+    line: '        <databasePassword>vagrant</databasePassword>'
+
+#- name: Execute run.sh to run ExceltoGigaDB tool
+#  script: /home/vagrant/ExceltoGigaDB/run.sh
+#  become: yes
+#  become_user: vagrant

@@ -1,0 +1,49 @@
+---
+- include_vars: main.yml
+
+- name: Clone gigadb-website repo
+  git:
+    repo: "{{ gigadb.repo }}"
+    dest: "{{ gigadb.home_dir }}/gigadb-website"
+    version: "{{ gigadb.repo_branch }}"
+  become: yes
+  become_user: vagrant
+
+- name: "Create {{ gigadb.home_dir }}/.env file"
+  copy:
+    src: "{{ gigadb.home_dir }}/gigadb-website/ops/configuration/variables/env-sample"
+    dest: "{{ gigadb.home_dir }}/gigadb-website/.env"
+    owner: vagrant
+    group: vagrant
+    mode: '0644'
+
+- name: Add Gitlab private token into .env file
+  lineinfile:
+    path: "{{ gigadb.home_dir }}/gigadb-website/.env"
+    regexp: '^#GITLAB_PRIVATE_TOKEN='
+    line: "GITLAB_PRIVATE_TOKEN={{ gitlab_private_token }}"
+
+- name: Add group variables url into .env file
+  lineinfile:
+    path: "{{ gigadb.home_dir }}/gigadb-website/.env"
+    regexp: '^GROUP_VARIABLES_URL="'
+    line: "GROUP_VARIABLES_URL={{ group_variables_url }}"
+
+- name: Add project variables url into .env file
+  lineinfile:
+    path: "{{ gigadb.home_dir }}/gigadb-website/.env"
+    regexp: '^PROJECT_VARIABLES_URL="'
+    line: "PROJECT_VARIABLES_URL={{ project_variables_url }}"
+
+- name: Generate configuration using variables in .env, GitLab, then exit
+  shell: docker-compose run --rm config > /vagrant/config.log
+  args:
+    chdir: "{{ gigadb.home_dir }}/gigadb-website"
+  become: true
+
+- name: Run composer update, then spin up the web application's services, then exit
+  shell: docker-compose run --rm webapp > /vagrant/webapp.log
+  args:
+    chdir: "{{ gigadb.home_dir }}/gigadb-website"
+  become: true
+

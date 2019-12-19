@@ -1,0 +1,15 @@
+---
+- hosts: all
+  gather_facts: yes
+
+- include: packages.yml
+  tags: Packages_Tasks
+
+- include: tools.yml
+  tags: Tools_Tasks
+
+- include: website.yml
+  tags: GigaDB_Tasks
+
+
+

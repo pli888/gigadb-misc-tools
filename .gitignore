@@ -1,0 +1,16 @@
+# gigadb-misc-tools
+*.log
+
+# Ansible
+.vault_passwd.txt
+provision/playbook.retry
+
+# Roles
+provision/roles/java/
+provision/roles/docker/
+provision/roles/git/
+provision/roles/pip/
+provision/roles/postgresql-client/
+
+# Vagrant
+.vagrant

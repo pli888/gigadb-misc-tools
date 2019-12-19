@@ -1,0 +1,11 @@
+# from galaxy
+- src: geerlingguy.java
+  name: java
+- src: geerlingguy.docker
+  name: docker
+- src: geerlingguy.git
+  name: git
+- src: geerlingguy.pip
+  name: pip
+- src: AlphaNodes.postgresql-client
+  name: postgresql-client

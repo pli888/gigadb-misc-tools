@@ -1,0 +1,6 @@
+---
+# tasks file for excel2gigadb
+- include_tasks: install.yml
+  tags: excel2gigadb
+
+
