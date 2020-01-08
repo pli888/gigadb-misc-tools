@@ -1,63 +1,172 @@
 # gigadb-misc-tools
 
-## Preparation
-
 This repository contains code that will auto-deploy the GigaDB website and 
-Jesse'sdatabase tools on a virtual machine (VM) using 
+Jesse's database tools on a virtual machine (VM) using 
 [VirtualBox](https://www.virtualbox.org), [Vagrant](https://www.vagrantup.com) 
 and [Ansible](https://www.ansible.com).
 
-Vagrant is a command line utility for creating VMs. You need to download and
-install Vagrant using the appropriate installer or package for your platform 
-which is available from the 
-[Vagrant download page](https://www.vagrantup.com/downloads.html).
+## Deployment on OS X
 
-The virtual machine hosting GigaDB itself is created using 
-[VirtualBox](https://www.virtualbox.org). Download and install the appropriate 
-version of [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-for your platform.
+The following information describes how GigaDB website and Jesse's database 
+tools can be installed on **Sierra OSX 10.12**.
+
+### Install VirtualBox
+
+The VM hosting GigaDB is created using [VirtualBox](https://www.virtualbox.org). 
+Download the `6.0.14` version of VirtualBox for your platform from [here](https://www.virtualbox.org/wiki/Download_Old_Builds_6_0)
+and follow the instructions provided by the VirtualBox installer.
+
+### Install Vagrant
+
+Vagrant is a command line utility which can be used for creating VirtualBox VMs.
+Download Vagrant version `2.2.6` available at https://releases.hashicorp.com/vagrant/. 
+Open the `dmg` file and double-click the `vagrant.pkg` file and follow the 
+instructions in the installer for complete installation.
+
+### Install Ansible
 
 [Ansible](https://www.ansible.com) is software that allows you to automate the 
-installation of software packages onto computers. It is used to install a 
+installation of software packages into computers. It is used to install a 
 Dockerised version of GigaDB, and Jesse's database tools and its software 
-dependencies on the VM. Ansible is automatically installed onto the VM during 
-its creation but is also needs to be manually installed on your computer to 
-download code to that is used to install software packages to install GigaDB on 
-the VM.
+dependencies within the VM. Ansible is automatically installed onto the VM during 
+its creation but it also needs to be manually installed on your computer to 
+download supplementary Ansible code not included in the `gigadb-misc-tools` 
+repo.
 
-## Command-line access
+A local copy of Ansible will be installed using the [Macports](https://www.macports.org) 
+package manager for OSX:
 
-We need access to the command-line console in order to use Vagrant which is a
-command-line tool.
+### Install Macports
 
-### MacOSX
+#### Check if Macports is installed
 
-On Apple computers, the `Terminal` app can be used to access the command-line. 
-`Terminal` is in the Utilities folder in Applications. To open it, open your 
-Applications folder, then open Utilities and double-click on Terminal.
+We need access to the command-line console to run commands. On Apple computers, 
+the `Terminal` app can be used to access the command-line. `Terminal` can be 
+found in the `Utilities` folder in `Applications`. To open it, open your 
+`Applications` folder, then click `Utilities` and double-click on `Terminal`.
 
-### Windows
+You can check if Macports is already installed on your computer by running in 
+the `Terminal`:
+```
+# Check
+$ port list
+```
 
-For Windows, try installing [Babun](http://babun.github.io) which provides a 
-Linux-like console on this OS platform.
+If a list of packages are displayed then Macports is already installed.
 
-## Downloading gigadb-misc-tools
+#### Install Xcode and Xcode command line tools
+ 
+Macports requires Xcode and Xcode command line tools. You can search for version 
+9.2 at https://developer.apple.com/download/more/. Download the 
+5.1 GB Xcode_9.2.xip file and the Command Line Tools (macOS 10.12) for 
+Xcode 9.2.dmg file.
 
-This `gigadb-misc-tools` code repository is available from 
-[GitHub](https://github.com/pli888/gigadb-misc-tools). The `git` tool can be 
-used to do this.
+Double click on Xcode_9.2.xip to unzip the file. You will now see an Xcode 
+application file - click this to install Xcode components into Sierra OSX. You 
+can close the `Welcome to code` start up window.
 
-On MacOSX, `git` can be installed using `Xcode Command Line Tools`. For 
-Mavericks (10.9) or above, you can do this by trying to run `git` from the 
-`Terminal` the very first time. If you don’t have it installed already, it will 
-prompt you to install the xcode tools.
+Double click on command_line_Tools_macOS_10.12_for_Xcode_9.2.dmg file to open 
+it. Then click on the `pkg` file and follow the instructions in Command line 
+tools installer.
 
-On Windows platforms. `Babun` will provide `git` as well as other development 
-tools.
+#### Macports installation
 
-After `git` has been installed, use it to download the source code repo from 
-Github. Decide on a directory for where to save this code and execute the 
-following command below:
+Download the Macports for Sierra OSX installer from https://github.com/macports/macports-base/releases/download/v2.6.2/MacPorts-2.6.2-10.12-Sierra.pkg.
+Double click this `pkg` file and follow its installer instructions.
+
+##### Install Git
+
+Git is a version control system that we use in GigaScience for managing source 
+code. It is used to download this repo onto your laptop.
+
+If git is already installed on your laptop then this part can be skipped. Test 
+if git is installed:
+```
+$ which git
+git is /opt/local/bin/git
+```
+
+Use Macports to install git:
+```
+$ sudo port install git
+```
+
+Note that Python 2 will be installed as a dependency of git.
+
+#### Finish installing Ansible
+
+Since a version of Python 2 has been installed by Macports, lets use it as the 
+default version of Python to be used:
+```
+$ sudo port select --set python python27
+```
+
+Pip is a package manager for installing Python packages and can be used to 
+install Ansible. Install Pip as follows:
+```
+$ sudo port install py27-pip
+$ sudo port select --set pip pip27
+```
+
+Finally, install Ansible using the Pip manager:
+```
+$ sudo pip install ansible
+```
+
+The `pip` manager in your `Macports` Python installation installs Ansible but you 
+might not be able to use it since it might not be listed on your `PATH `
+environment variable:
+```
+# Check
+$ which ansible
+ansible is not on PATH
+```
+
+To add the location of the `ansible` tool to your PATH, find where ansible is:
+```
+$ find /opt/local -name ansible
+```
+
+This command should show that the ansible executable is in `/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin`. 
+Your PATH variable needs to be updated with the addition of this path. To do 
+this, `CONTROL-C` copy the `export` line below:
+```
+export PATH=/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:$PATH to the top of your ~/.profile file
+```
+
+Open your `profile` file using the VIM test editor
+```
+$ vi ~/.profile
+```
+
+Position the cursor at the beginning of the first line of the `profile` file. 
+Type `i` to enter into `insert` mode and then `CONTROL-V` to paste the text and 
+press `return`. Press `ESC` to return to command mode and then type `:wq!` to 
+save and exit the VIM text editor.
+
+Refresh the PATH variable for your console using the edited `~/.profile` file:
+```
+$ source ~/.profile
+```
+
+Now check Ansible can be found:
+```
+$ ansible --version
+ansible 2.8.2
+  config file = None
+  configured module search path = [u'/Users/peterli/.ansible/plugins/modules', u'/opt/local/share/ansible/plugins/modules']
+  ansible python module location = /opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/ansible
+  executable location = /opt/local/bin/ansible
+  python version = 2.7.17 (default, Oct 21 2019, 00:44:43) [GCC 4.2.1 Compatible Apple LLVM 9.1.0 (clang-902.0.39.2)]
+```
+
+### Download gigadb-misc-tools
+
+This `gigadb-misc-tools` code repository is available from [GitHub](https://github.com/pli888/gigadb-misc-tools). 
+The `git` tool can be used to do this.
+
+Decide on a directory for where to save this code and execute the following 
+`git clone` command below:
 
 ```bash
 $ git clone https://github.com/pli888/gigadb-misc-tools.git
@@ -70,82 +179,39 @@ Resolving deltas: 100% (516/516), done.
 Checking connectivity... done.
 ```
 
-Now we need to switch to the repository branch containing the latest code:
+Switch to the repository branch containing the latest code:
 ```
+# Change directory to the repo
+$ cd gigadb-misc-tools
+# Switch branch
 $ git checkout create-vm
 ```
 
-## Ansible installation
-
-### MacOSX
-
-Ansible can be installed using a package manager for MacOSX called 
-[Macports](https://www.macports.org).
-
-Download the DMG image for MacPorts from [here](https://www.macports.org/install.php).
-Be sure to pick the correct one for your MacOS X version. Mount the disk image 
-and run the installer.
-
-#### Install Python, pip and Ansible
-
-Once `Macports` is installed, open a `Terminal` to execute the following command
-to install Python:
-```
-sudo port install python38
-```
-Make python 3.8 the default, i.e. the version you get when you run `python`:
-```
-sudo port select --set python python38
-```
-
-`pip` is a package manager for installing Python software packages such as 
-Ansible. Install `pip` as follows:
-```
-sudo port install py38-pip
-sudo port select --set pip pip38
-```
-
-Finally, install Ansible:
-```
-$ pip install ansible
-# Check ansible is installed
-$ which ansible
-ansible is /opt/local/bin/ansible
-```
-
-### Windows
-
-Try these instructions for installing Ansible on Windows at 
-http://iambelmin.com/2016/01/01/installing-ansible-on-babun/.
-
-
-## Access to password-protected GigaDB variables for Ansible
+### Access to password-protected GigaDB variables for Ansible
 
 There is a number of sensitive values which are used to parameterise various
 variables that GigaDB needs to perform its functionality. These values are 
 retrieved from GitLab during the GigaDB installation process with a key token 
 which itself is password-protected. A file containing this password needs to be 
-created in the `gigadb-misc-tools` directory. Contact 
-`peter@gigasciencejournal.com` for this password which then should be saved into 
-a file called `vault_passwd.txt` as follows:
+created in the `gigadb-misc-tools` directory. Contact `peter@gigasciencejournal.com` 
+for this password which then should be saved into a file called `vault_passwd.txt` 
+as follows:
 ```
-# Change directory into the gigadb-misc-tools code repo folder
-$ cd gigadb-misc-tools
-$ echo "the_password" > ".vault_passwd.txt"
+# Create password file
+$ echo 'the_password' > '.vault_passwd.txt'
 ```
 
-## Roles installation
+### Roles installation
 
 An Ansible role is a set of source code files which can be used to install a 
-software package. Extra roles need to be downloaded from 
-https://galaxy.ansible.com and this can be done as follows in a command-line 
-console:
+software package. Extra roles need to be downloaded from https://galaxy.ansible.com 
+and this can be done as follows in a command-line console:
 ```
 # Download roles from ansible galaxy
 $ ansible-galaxy install -r provision/roles/requirements.yml
 ```
 
-## Install GigaDB and Jesse's database tools
+### Install GigaDB and Jesse's database tools
 
 We are now in a position to create a VM running GigaDB with Jesse's database
 tools installed ready for use:
@@ -176,11 +242,17 @@ Bringing machine 'default' up with 'virtualbox' provider...
     default: SSH auth method: private key
 ```
 
-You now need to wait `15-20 minutes` whilst a VM running Linux Ubuntu version 
-18.04 boots up and the process to install various software packages, GigaDB and 
-Jesse's database tools is executed. Waiting times might be even longer depending 
-on how fast your network connection is for downloading packages. You can follow 
-the progress of the installation by monitoring output messages in the console:
+A VirtualBox window will appear on your desktop showing the Ubuntu boot screen 
+and a console login. You might need to provide your `admin` password when the 
+Ubuntu VM boot up process is setting up a shared folder between your computer 
+and the guest Ubuntu VM.
+
+There can be a wait of `30 minutes or more` whilst a VM running Linux Ubuntu 
+version 18.04 boots up and the process to install various software packages, 
+GigaDB and Jesse's database tools is executed. Waiting times might be even 
+longer depending on how fast your network connection is for downloading 
+packages. You can follow the progress of the installation by monitoring output 
+messages in the console:
 ```
 TASK [gigadb : Clone gigadb-website repo] **************************************
 ok: [default] => {"after": "564e669f7f680b9d7800040ac10e999768982c5c", "before": "564e669f7f680b9d7800040ac10e999768982c5c", "changed": false, "remote_url_changed": false}
@@ -204,9 +276,10 @@ message in your console:
 ```
 TASK [gigadb : Run composer update, then spin up the web application's services, then exit] ***
 ```
-Two log files, `config.log` and `webapp.log` will be created in the 
-`/path/to/gigadb-misc-tools` directory. You can browse the contents of these two 
-log files to continue monitoring the installation of GigaDB:
+
+Two log files, `config.log` and `webapp.log` will then be created in the `/path/to/gigadb-misc-tools` 
+directory. You can browse the contents of these two log files to continue 
+monitoring the installation of GigaDB:
 ```
 # Check latest messages in config.log
 $ tail config.log
@@ -224,19 +297,59 @@ Selecting previously unselected package libicu52:amd64.
 (Reading database ... 13685 files and directories currently installed.)
 Preparing to unpack .../libicu52_52.1-8+deb8u7_amd64.deb ...
 Unpacking libicu52:amd64 (52.1-8+deb8u7) ...
+```
 
+If all goes well then the last messages you will see in `webapp.log` will be:
+```
+Step 41/41 : EXPOSE 9000
+ ---> Running in 7e7b55862ff2
+Removing intermediate container 7e7b55862ff2
+ ---> 38d49b791625
+
+Successfully built 38d49b791625
+Successfully tagged deployment_application:latest
+```
+
+These messages tell you that the `deployment_application:latest` docker 
+container has been created. PHP packages required by GigaDB will now be 
+downloaded into the `gigadb-website/vendor` folder. This can take a while 
+especially if you have a slow network connection but you can follow the 
+downloading of these packages by logging into the VM. Open a new `Terminal` 
+console window by holding down the COMMAND key and pressing T, and executing the
+following commands:
+```
+# Connect to the VM
+$ vagrant ssh
+# Go to /home/vagrant/gigadb-website/vendor directory
+$ cd /home/vagrant/gigadb-website/vendor
+$ ls -lh
+total 212K
+drwxr-xr-x  3 root root 4.0K Jan  8 01:19 aik099
+-rw-r--r--  1 root root  178 Jan  8 01:20 autoload.php
+drwxr-xr-x 10 root root 4.0K Jan  8 01:19 behat
+drwxr-xr-x  6 root root 4.0K Jan  8 01:12 bower-asset
+drwxr-xr-x  3 root root 4.0K Jan  8 01:12 cebe
+drwxr-xr-x  4 root root 4.0K Jan  8 01:16 cilex
+drwxr-xr-x  4 root root 4.0K Jan  8 01:20 composer
+```
+
+This list of PHP packages will be added to until there are:
+```
+drwxr-xr-x  5 root root 4.0K Jan  8 01:12 yiisoft
+drwxr-xr-x 12 root root 4.0K Jan  8 01:15 zendframework
+drwxr-xr-x  4 root root 4.0K Jan  8 01:16 zetacomponents
 ```
 
 ## Accessing GigaDB
 
-If GigaDB is successfully installed then you will see this message in your 
-console:
+If GigaDB is successfully installed in your VM then you will see this message in
+your console window where you executed `vagrant up`:
 ```
 PLAY RECAP *********************************************************************
 default                    : ok=61   changed=20   unreachable=0    failed=0    skipped=27   rescued=0    ignored=1  
 ```
 
-The GigaDB website running inside your VM can also be viewed on a browser at: 
+The GigaDB website running inside your VM can then be viewed on a browser at: 
 http://gigadb.gigasciencejournal.com:9171.
 
 ## Running Jesse's database tools
