@@ -6,7 +6,6 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Use clean minimal latest ubuntu server amd64 base box
   config.vm.box = "peru/ubuntu-18.04-server-amd64"
-  config.vm.box_version = "20191202.01"
   # Give host access to web server on VM
   config.vm.network "forwarded_port", guest: 80, host: 8086
   config.vm.network "forwarded_port", guest: 9170, host: 9171
