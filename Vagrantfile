@@ -9,9 +9,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Give host access to web server on VM
   config.vm.network "forwarded_port", guest: 80, host: 8086
   config.vm.network "forwarded_port", guest: 9170, host: 9171
-  # Allow guest VM to access this repo's files
   config.vm.network "private_network", type: "dhcp"
-  config.vm.synced_folder ".", "/vagrant"
+  # Allow guest VM to access this repo's files
+  if Vagrant::Util::Platform.windows? then
+    # Enable one-time sync of repo files on a windows 10 host
+    # to ubuntu guest VM on vagrant up
+    config.vm.synced_folder ".", "/vagrant/", type: "rsync"
+  else
+    config.vm.synced_folder ".", "/vagrant"
+  end
 
   config.vm.provider :virtualbox do |vb|
     vb.name = "gigadb.test"
