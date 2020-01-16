@@ -131,7 +131,7 @@ This command should show that the ansible executable is in `/opt/local/Library/F
 Your PATH variable needs to be updated with the addition of this path. To do 
 this, `CONTROL-C` copy the `export` line below:
 ```
-export PATH=/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:$PATH to the top of your ~/.profile file
+export PATH=/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:$PATH
 ```
 
 Open your `profile` file using the VIM test editor
