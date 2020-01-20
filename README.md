@@ -211,6 +211,22 @@ and this can be done as follows in a command-line console:
 $ ansible-galaxy install -r provision/roles/requirements.yml
 ```
 
+When running the above command, you might find there is a verification problem 
+relating to SSL certificates similar to the one below:
+```
+[WARNING]: - java was NOT installed successfully: Unknown error when
+attempting to call Galaxy at 'https://galaxy.ansible.com/api/api':
+<urlopen error
+[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:727)>
+ERROR! - you can use --ignore-errors to skip failed roles and finish
+processing the list.
+```
+
+If this is the case then use this command to download the Ansible roles:
+```
+$ ansible-galaxy install --ignore-certs --role-file provision/roles/requirements.yml
+```
+
 ### Install GigaDB and Jesse's database tools
 
 We are now in a position to create a VM running GigaDB with Jesse's database
