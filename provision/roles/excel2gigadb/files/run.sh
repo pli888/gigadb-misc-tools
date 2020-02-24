@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Set classpath
-PROJECT_HOME="/home/vagrant/ExceltoGigaDB"
-CLASSPATH="$PROJECT_HOME/lib/*"
+export PROJECT_HOME="/home/vagrant/ExceltoGigaDB"
+export LIB_DIR="$PROJECT_HOME/lib"
+export CLASSPATH=".:$LIB_DIR/*"
 
 # Clean up previous bash script runs
 declare -a files=("./java.log" "./javac.log")
@@ -29,4 +30,3 @@ javac -d $PROJECT_HOME/bin \
 # Execute ExceltoGigaDB tool
 java -cp $CLASSPATH:$PROJECT_HOME/configuration:$PROJECT_HOME/bin Main &> java.log
 
-export PROJECT_HOME CLASSPATH
